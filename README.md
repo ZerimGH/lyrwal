@@ -1,6 +1,6 @@
 Lyrwal is a simple program I made to set my wallpaper to an image of random song lyrics from artists.
 
-It's very incomplete right now, but I will work on it :)
+It's very incomplete right now, and the lyrics requests are very basic so it sometimes includes collaborations / samples of artists, but I will work on it :)
 
 Setup (Arch linux only):
   1) Clone the repo
