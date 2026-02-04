@@ -19,7 +19,7 @@ def random_lyrics():
     powers = [2]
     for i in range(2, max_lines):
         n = 2 ** i
-        if n >= max_lines: break
+        if n > max_lines: break
         powers.append(n)
     n_lines = random.choice(powers)
 
