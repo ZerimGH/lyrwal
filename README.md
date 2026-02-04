@@ -33,4 +33,4 @@ Setup (AUR):
      >
      > feh --bg-fill $WALLPAPER_DIR
      > 
-  6) Run lyrwal update, and your wallpaper should update :)
+  6) Run lyrwal update, and your wallpaper should update :) (It will take a while to update the wallpaper until enough lyrics have been cached)
