@@ -1,0 +1,3 @@
+[submodule "textwal"]
+	path = textwal
+	url = git@github.com:ZerimGH/textwal.git
