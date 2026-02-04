@@ -12,20 +12,20 @@ api_key = "YOUR_API_KEY"
 
 [lyrics]
 artists = ["Avenged Sevenfold"]
-max_lines = 8 
-max_songs = 50 
+max_lines = 8
+max_songs = 200 
 
 [render]
 width = 1920
 height = 1080
 font = "/usr/share/fonts/liberation/LiberationMono-Regular.ttf"
-font_size = 48
+font_size = 38 
 text_color = "#ffffff"
 background_color = "#000000"
 
 [wallpaper]
-wallpaper_dir = "~/Pictures/lyrwal/wallpaper.png"
-command = "~/.config/lyrwal/set-wallpaper.sh"
+wallpaper_dir = "$HOME/Pictures/lyrwal/wallpaper.png"
+command = "$HOME/.config/lyrwal/set-wallpaper.sh"
 """
 
 EXAMPLE_SET = """\
