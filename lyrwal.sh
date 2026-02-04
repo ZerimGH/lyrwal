@@ -40,7 +40,7 @@ max_songs = 50
 [render]
 width = 1920
 height = 1080
-font = "/usr/share/fonts/liberation/LiberationSerif-Regular.ttf"
+font = "/usr/share/fonts/liberation/LiberationMono-Regular.ttf"
 font_size = 48
 text_color = "#ffffff"
 background_color = "#000000"
