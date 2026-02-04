@@ -44,11 +44,10 @@ def id_lookup(artist):
 
 def id_lookup_else_cache(artist):
     artist_id = id_lookup(artist)
-    if not artist_id:
+    if artist_id is None:
         artist_id = fetch_artist_id(artist)
-        if not artist_id:
+        if artist_id is None:
             print("Failed to lookup artist %s." % (artist))
-            err()
         cache_artist_id(artist, artist_id)
     return artist_id
 
@@ -91,7 +90,7 @@ def fetch_artist_id(artist):
         except Exception as e:
             print(f"Couldn't get artist {artist} from genius.")
             print(e)
-            err()
+            return None
 
 def cache_songs(artist_id):
     excluded_terms = ["remix", "live", "feat.", "ft.", "sampled", "edition", "version", "instrumental", "edit", "mix", "demo", "cover", "theme"]
@@ -110,7 +109,7 @@ def cache_songs(artist_id):
         result = genius.artist_songs(artist_id, per_page=min(remaining, 50), page=page)
         songs_page = result.get("songs", [])
 
-        if not songs_page:
+        if songs_page is None:
             break
 
         for song_data in songs_page:
@@ -148,7 +147,7 @@ def random_song_id_else_cache(artist_id):
     with open(ids_loc, "r") as f:
         song_ids = [line.strip() for line in f]
 
-    if not song_ids:
+    if song_ids is None:
         print("No song IDs found in the cache.")
         return None
 
@@ -191,7 +190,7 @@ def random_lyrics_fallback():
         print(f"Artist: {artist}")
         artists.remove(artist)
         artist_id = id_lookup_else_cache(artist) 
-        if not artist_id: continue
+        if artist_id is None: continue
 
         artist_dir = CACHE_DIR / str(artist_id)
 
@@ -223,7 +222,7 @@ def random_lyrics():
         print(f"Artist: {artist}")
         artists.remove(artist)
         artist_id = id_lookup_else_cache(artist) 
-        if not artist_id: continue
+        if artist_id is None: continue
         print(f"Id: {artist_id}")
         lyrics = random_lyrics_else_cache(artist_id) 
         print("Got lyrics!")
