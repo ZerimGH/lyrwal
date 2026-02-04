@@ -43,6 +43,7 @@ def id_lookup(artist):
     except: return None
 
 def id_lookup_else_cache(artist):
+    if artist is None: return None
     artist_id = id_lookup(artist)
     if artist_id is None:
         artist_id = fetch_artist_id(artist)
@@ -93,7 +94,6 @@ def fetch_artist_id(artist):
             return None
 
 def cache_songs(artist_id):
-    if artist_id is None: return None
     excluded_terms = ["remix", "live", "feat.", "ft.", "sampled", "edition", "version", "instrumental", "edit", "mix", "demo", "cover", "theme"]
     artist_dir = CACHE_DIR / str(artist_id)
 
@@ -142,12 +142,13 @@ def cache_songs(artist_id):
             f.write(f"{song_data.get('id')}\n")
 
 def random_song_id_else_cache(artist_id):
-    if artist_id is None: return None
     artist_dir = CACHE_DIR / str(artist_id)
     ids_loc = artist_dir / "songs.txt"
 
     if not ids_loc.exists():
         cache_songs(artist_id)
+        if not ids_loc.exists():
+            return None
 
     with open(ids_loc, "r") as f:
         song_ids = [line.strip() for line in f]
@@ -166,7 +167,6 @@ def process_lyrics(lyrics):
     return processed_lyrics
 
 def random_lyrics_else_cache(artist_id):
-    if artist_id is None: return None
     artist_dir = CACHE_DIR / str(artist_id)
     song_id = random_song_id_else_cache(artist_id)
 
@@ -215,7 +215,7 @@ def random_lyrics_fallback():
 
             if song_loc.exists():
                 with open(song_loc, "r") as f:
-                    print("Got lyrics!")
+                    print("Got cached lyrics!")
                     return f.read()
             else: continue
     print("No cached lyrics found.")
@@ -229,10 +229,12 @@ def random_lyrics():
         print(f"Artist: {artist}")
         artists.remove(artist)
         artist_id = id_lookup_else_cache(artist) 
-        if artist_id is None: continue
-        print(f"Id: {artist_id}")
-        lyrics = random_lyrics_else_cache(artist_id) 
-        print("Got lyrics!")
-        if lyrics is not None: break
+        if artist_id is None or artist_id == 'None': 
+            continue
+        else:
+            print(f"Id: {artist_id}")
+            lyrics = random_lyrics_else_cache(artist_id) 
+            if lyrics is not None: break
     if lyrics is None: return random_lyrics_fallback()
+    print("Got lyrics!")
     return lyrics
