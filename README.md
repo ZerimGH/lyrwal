@@ -21,7 +21,7 @@ Setup (Arch linux only):
   6) Fill in the script to set your wallpaper
      There's no generic way to update the wallpaper between wm's, so you'll need a script to do that.
      The script is at ~/.config/lyrwal/set-wallpaper.sh, and is run after the wallpaper is rendered.
-     An example script might look like:
+     An example script for X11 might look like:
      > #!/usr/bin/env bash
      >
      > \# These exports are only needed if the script will be run as indirectly, by something like cronie or your wm
