@@ -1,0 +1,12 @@
+TODO:
+  more config options:
+    text alignment and position
+    background image instead of solid coloud
+    lyric modes:
+      # list of artists
+      list of songs
+      list of albums
+      maybe currently playing song with playerctl metadata?
+    text opacity
+    option to show song information (title, artist) under lyrics
+  improve song lookup (remove irrelevant results)
