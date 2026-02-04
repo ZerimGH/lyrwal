@@ -9,7 +9,7 @@ Setup (Arch linux only):
      > cd lyrwal && ./install.sh
   3) Get an API key for genius lyrics from https://genius.com/api-clients (free)
   4) Run lyrwal, and let it generate default configs
-     > lyrwal
+     > lyrwal update
   5) Add your API key to the config file at ~/.config/lyrwal/config.toml
   
      Look for the lines:
@@ -24,11 +24,14 @@ Setup (Arch linux only):
      An example script for X11 might look like:
      > #!/usr/bin/env bash
      >
-     > \# These exports are only needed if the script will be run as indirectly, by something like cronie or your wm
+     > \# These exports are only needed if the script will be run indirectly, by something like cronie or your wm
      >
      > export DISPLAY=:0
      >
      > export XAUTHORITY=$(ls /tmp/xauth_* | head -n 1)
      >
-     > feh --bg-fill "/home/(YOUR USER)/Pictures/lyrwal/wallpaper.png" # You will need to change the directory if you change the wallpaper_dir in the config file.
-  7) Run lyrwal, and your wallpaper should update :)
+     > WALLPAPER_DIR=$(lyrwal get wallpaper_dir)
+     >
+     > feh --bg-fill $WALLPAPER_DIR
+     > 
+  7) Run lyrwal update, and your wallpaper should update :)
