@@ -20,7 +20,8 @@ ID_CACHE_LOC = CACHE_DIR / "ids.toml"
 genius = Genius(config.api_key,
     skip_non_songs=True,
     remove_section_headers=True,
-    verbose=False
+    verbose=False,
+    timeout=5
 )
 
 def ensure_cache():
@@ -108,7 +109,7 @@ def cache_songs(artist_id):
 
     try:
         while remaining > 0:
-            result = genius.artist_songs(artist_id, per_page=min(remaining, 50), page=page, sort='Popularity')
+            result = genius.artist_songs(artist_id, per_page=min(remaining, 50), page=page, sort='popularity')
             songs_page = result.get("songs", [])
             if songs_page is None:
                 break
