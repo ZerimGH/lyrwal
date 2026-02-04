@@ -106,26 +106,29 @@ def cache_songs(artist_id):
     print(f"Caching songs for artist id {artist_id}")
 
     while remaining > 0:
-        result = genius.artist_songs(artist_id, per_page=min(remaining, 50), page=page)
-        songs_page = result.get("songs", [])
+        try:
+            result = genius.artist_songs(artist_id, per_page=min(remaining, 50), page=page)
+            songs_page = result.get("songs", [])
 
-        if songs_page is None:
-            break
-
-        for song_data in songs_page:
-            song_title = song_data["title"].lower()
-            song_parts = re.split(r'[\s()]+', song_title)
-
-            if any(excluded_term in song_parts for excluded_term in excluded_terms):
-                print(f"Skipping song {song_title}, title contains an excluded term")
-                continue
-
-            print(f"Adding song {song_title}")
-            all_songs.append(song_data)
-            remaining -= 1
-            if remaining == 0:
+            if songs_page is None:
                 break
-        page += 1
+
+            for song_data in songs_page:
+                song_title = song_data["title"].lower()
+                song_parts = re.split(r'[\s()]+', song_title)
+
+                if any(excluded_term in song_parts for excluded_term in excluded_terms):
+                    print(f"Skipping song {song_title}, title contains an excluded term")
+                    continue
+
+                print(f"Adding song {song_title}")
+                all_songs.append(song_data)
+                remaining -= 1
+                if remaining == 0:
+                    break
+            page += 1
+        except AssertionError:
+            break
 
     if len(all_songs) == 0:
         print(f"Couldn't get songs from Genius for artist id {artist_id}.")
@@ -217,6 +220,7 @@ def random_lyrics_fallback():
 
 def random_lyrics():
     artists = config.artists.copy()
+    lyrics = None
     while len(artists) > 0:
         artist = random.choice(artists)
         print(f"Artist: {artist}")
@@ -226,6 +230,6 @@ def random_lyrics():
         print(f"Id: {artist_id}")
         lyrics = random_lyrics_else_cache(artist_id) 
         print("Got lyrics!")
-        if lyrics: break
-    if not lyrics: return random_lyrics_fallback()
+        if lyrics is not None: break
+    if lyrics is None: return random_lyrics_fallback()
     return lyrics

@@ -9,7 +9,7 @@ if not config.valid:
 
 def random_lyrics():
     lyrics = fetcher.random_lyrics()
-    if not lyrics:
+    if lyrics is None:
         return "No lyrics found."
 
     paragraphs = re.split(r'\n{2,}', lyrics)
