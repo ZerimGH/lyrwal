@@ -68,7 +68,7 @@ if [ "$cmd" = "update" ]; then
 
   if [ ! -e "$config_toml_path" ]; then
       echo "Creating $config_toml_path..."
-      write_config
+      write_cfg
       echo "$config_toml_path has been created."
       echo "You may need to get an API key for genius for $config_toml_path, and edit $set_wallpaper_path to correctly set your wallpaper."
   fi
