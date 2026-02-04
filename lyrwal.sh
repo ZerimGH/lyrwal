@@ -46,7 +46,7 @@ text_color = "#ffffff"
 background_color = "#000000"
 text_align = "centre"
 char_align = "left"
-#bg_img = /path/to/bg.png
+#bg_img = "/path/to/bg.png"
 
 [wallpaper]
 wallpaper_dir = "$HOME/Pictures/lyrwal/wallpaper.png"

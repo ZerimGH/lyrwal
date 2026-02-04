@@ -3,7 +3,7 @@ TODO:
     # text alignment 
     # character alignment
     centre character alignment
-    background image instead of solid coloud
+    # background image instead of solid coloud
     lyric modes:
       # list of artists
       list of songs
