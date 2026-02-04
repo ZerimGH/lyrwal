@@ -106,30 +106,26 @@ def cache_songs(artist_id):
 
     print(f"Caching songs for artist id {artist_id}")
 
-    while remaining > 0:
-        try:
-            result = genius.artist_songs(artist_id, per_page=min(remaining, 50), page=page)
+    try:
+        while remaining > 0:
+            result = genius.artist_songs(artist_id, per_page=min(remaining, 50), page=page, sort='Popularity')
             songs_page = result.get("songs", [])
-
             if songs_page is None:
                 break
-
             for song_data in songs_page:
                 song_title = song_data["title"].lower()
                 song_parts = re.split(r'[\s()]+', song_title)
-
                 if any(excluded_term in song_parts for excluded_term in excluded_terms):
                     print(f"Skipping song {song_title}, title contains an excluded term")
                     continue
-
                 print(f"Adding song {song_title}")
                 all_songs.append(song_data)
                 remaining -= 1
                 if remaining == 0:
                     break
             page += 1
-        except AssertionError:
-            break
+    except Exception as e:
+        print(e)
 
     if len(all_songs) == 0:
         print(f"Couldn't get songs from Genius for artist id {artist_id}.")
@@ -169,6 +165,7 @@ def process_lyrics(lyrics):
 def random_lyrics_else_cache(artist_id):
     artist_dir = CACHE_DIR / str(artist_id)
     song_id = random_song_id_else_cache(artist_id)
+    if song_id is None: return None
 
     song_loc = artist_dir / f"{song_id}.txt"
 
