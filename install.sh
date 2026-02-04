@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+read -p "This script is only for arch linux, and may mess stuff up on other distros. Do you want to continue (y/n)? " choice
+
+if [[ "$choice" == "y" || "$choice" == "Y" ]]; then
+    echo "Continuing..."
+else
+    echo "Exiting..."
+    exit 0
+fi
+
 ./uninstall.sh
 
 dir=$(pwd)
