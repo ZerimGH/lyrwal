@@ -30,5 +30,5 @@ Setup (Arch linux only):
      >
      > export XAUTHORITY=$(ls /tmp/xauth_* | head -n 1)
      >
-     > feh --bg-fill "~/Pictures/lyrwal/wallpaper.png" # You will need to change the directory if you change the wallpaper_dir in the config file. It's also better to use an absolute path here
+     > feh --bg-fill "/home/(YOUR USER)/Pictures/lyrwal/wallpaper.png" # You will need to change the directory if you change the wallpaper_dir in the config file.
   7) Run lyrwal, and your wallpaper should update :)
