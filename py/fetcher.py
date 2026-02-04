@@ -224,6 +224,7 @@ def random_lyrics():
         if not artist_id: continue
         print(f"Id: {artist_id}")
         lyrics = random_lyrics_else_cache(artist_id) 
-        if not lyrics: return random_lyrics_fallback()
         print("Got lyrics!")
-        return lyrics
+        if lyrics: break
+    if not lyrics: return random_lyrics_fallback()
+    return lyrics
