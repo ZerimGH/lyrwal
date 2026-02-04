@@ -24,7 +24,7 @@ Setup (Arch linux only):
      An example script might look like:
      > #!/usr/bin/env bash
      >
-     > \# These exports are only needed if the script will be run as root, or by something like cronie
+     > \# These exports are only needed if the script will be run as indirectly, by something like cronie or your wm
      >
      > export DISPLAY=:0
      >
