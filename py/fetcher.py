@@ -183,8 +183,39 @@ def random_lyrics_else_cache(artist_id):
         print(f"Error fetching lyrics for song ID {song_id}: {e}")
         return None
 
+def random_lyrics_fallback():
+    print("Failed to get random lyrics online, searching only cached files.")
+    artists = config.artists.copy()
+    while len(artists) > 0:
+        artist = random.choice(artists)
+        print(f"Artist: {artist}")
+        artists.remove(artist)
+        artist_id = id_lookup_else_cache(artist) 
+        if not artist_id: continue
+
+        artist_dir = CACHE_DIR / str(artist_id)
+
+        ids_loc = artist_dir / "songs.txt"
+
+        if not ids_loc.exists(): continue 
+
+        with open(ids_loc, "r") as f:
+            song_ids = [line.strip() for line in f]
+
+        while len(song_ids) > 0:
+            song_id = random.choice(song_ids)
+            song_ids.remove(song_id)
+
+            song_loc = artist_dir / f"{song_id}.txt"
+
+            if song_loc.exists():
+                with open(song_loc, "r") as f:
+                    print("Got lyrics!")
+                    return f.read()
+            else: continue
+
 def random_lyrics():
-    artists = config.artists
+    artists = config.artists.copy()
     while len(artists) > 0:
         artist = random.choice(artists)
         print(f"Artist: {artist}")
@@ -193,6 +224,6 @@ def random_lyrics():
         if not artist_id: continue
         print(f"Id: {artist_id}")
         lyrics = random_lyrics_else_cache(artist_id) 
-        if not lyrics: err() 
+        if not lyrics: return random_lyrics_fallback()
         print("Got lyrics!")
         return lyrics
