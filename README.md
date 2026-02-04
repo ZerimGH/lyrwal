@@ -18,7 +18,8 @@ Setup (Arch linux only):
      > api_key = "****************************************************************" # < PUT YOUR API KEY IN THESE QUOTES
      >
      You can customise colours, font, text styles, background image, resolution, and artists here too.
-  6) Fill in the script to set your wallpaper
+  6) Fill in the script to set your wallpaper.
+
      There's no generic way to update the wallpaper between wm's, so you'll need a script to do that.
      The script is at ~/.config/lyrwal/set-wallpaper.sh, and is run after the wallpaper is rendered.
      An example script for X11 might look like:
