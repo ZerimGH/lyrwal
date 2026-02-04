@@ -5,6 +5,11 @@ import tomllib
 import re
 import random
 config = cfg.Config()
+
+def err(): 
+    print("Something went wrong, couldn't get the text to render.")
+    exit(1)
+
 if not config.valid:
     print("Invalid config, cannot fetch.")
     exit()
@@ -86,7 +91,7 @@ def fetch_artist_id(artist):
         except Exception as e:
             print("Couldn't get artist %s from genius." % (artist))
             print(e)
-            return None
+            err()
 
 def cache_songs(artist_id):
     excluded_terms = ["remix", "live", "feat.", "ft.", "sampled", "edition", "version", "instrumental", "edit", "mix", "demo", "cover", "theme"]
@@ -182,5 +187,5 @@ def random_lyrics():
         artist_id = id_lookup_else_cache(artist) 
         if not artist_id: continue
         lyrics = random_lyrics_else_cache(artist_id) 
-        if not lyrics: return None 
+        if not lyrics: err() 
         return lyrics

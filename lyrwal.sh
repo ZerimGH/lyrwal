@@ -4,23 +4,22 @@ cd "$(dirname "$0")"
 
 set -e
 
-mkdir -p ~/Pictures
-mkdir -p ~/Pictures/lyrwal
+mkdir -p $HOME/Pictures
+mkdir -p $HOME/Pictures/lyrwal
 
 # Generate configs if not there
-
+mkdir -p $HOME/.config/lyrwal
 set_wallpaper_path="$HOME/.config/lyrwal/set-wallpaper.sh"
-config_toml_path="$HOME/config/config.toml"
+config_toml_path="$HOME/.config/config.toml"
 
 if [ ! -e "$set_wallpaper_path" ]; then
     echo "Creating $set_wallpaper_path..."
 
-    mkdir -p "$(dirname "$set_wallpaper_path")"
     cat <<EOL > "$set_wallpaper_path"
 #!/usr/bin/env bash
 
 echo 'You have not created a script to set your wallpaper!'
-echo 'Please edit ~/.config/lyrwal/set-wallpaper.sh to properly set the wallpaper based on the wallpaper_dir from your configuration file.'
+echo 'Please edit $HOME/.config/lyrwal/set-wallpaper.sh to properly set the wallpaper based on the wallpaper_dir from your configuration file.'
 EOL
     chmod +x "$set_wallpaper_path"
     echo "$set_wallpaper_path has been created."
@@ -31,7 +30,6 @@ fi
 if [ ! -e "$config_toml_path" ]; then
     echo "Creating $config_toml_path..."
 
-    mkdir -p "$(dirname "$config_toml_path")" 
     cat <<EOL > "$config_toml_path"
 [genius]
 api_key = "YOUR_API_KEY"
@@ -50,8 +48,8 @@ text_color = "#ffffff"
 background_color = "#000000"
 
 [wallpaper]
-wallpaper_dir = "~/Pictures/lyrwal/wallpaper.png"
-command = "~/.config/lyrwal/set-wallpaper.sh"
+wallpaper_dir = "$HOME/Pictures/lyrwal/wallpaper.png"
+command = "$HOME/.config/lyrwal/set-wallpaper.sh"
 EOL
 
     echo "$config_toml_path has been created."
@@ -62,7 +60,7 @@ fi
 
 
 # Generate wallpaper
-cd ~/.lyrwal/py
+cd $HOME/.lyrwal/py
 ./.venv/bin/python ./main.py > /tmp/lyrwal.txt
 font=$(./.venv/bin/python -c 'import config; config.get_opt("font")')
 background_color=$(./.venv/bin/python -c 'import config; config.get_opt("background_color")')
