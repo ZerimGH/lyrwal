@@ -2,7 +2,7 @@
 
 cd "$(dirname "$0")"
 
-set -e
+set -xe
 
 mkdir -p $HOME/Pictures
 mkdir -p $HOME/Pictures/lyrwal

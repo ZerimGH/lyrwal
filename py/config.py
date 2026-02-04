@@ -2,7 +2,9 @@ import tomllib
 from pathlib import Path
 import os
 
-def err(): exit(1)
+def err(): 
+    print("Something went wrong with loading the configuration.")
+    exit(1)
 
 CONFIG_PATH = Path("~/.config/lyrwal/config.toml").expanduser()
 SET_PATH = Path("~/.config/lyrwal/set-wallpaper.sh").expanduser()
@@ -74,6 +76,7 @@ class Config:
             self.command = config['wallpaper']['command']
             self.valid = True
         except Exception as e:
+            print(e)
             err()
             self.valid = False
 
