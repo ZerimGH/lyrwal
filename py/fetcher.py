@@ -213,6 +213,8 @@ def random_lyrics_fallback():
                     print("Got lyrics!")
                     return f.read()
             else: continue
+    print("No cached lyrics found.")
+    return None
 
 def random_lyrics():
     artists = config.artists.copy()
