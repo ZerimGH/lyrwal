@@ -66,6 +66,10 @@ class Config:
 
             self.valid = True
 
+            if self.api_key == "YOUR_API_KEY":
+                print("You need to get an API key!\ngo to https://genius.com/api-clients/new, and put your key in the config file.")
+                self.valid = False
+
         except Exception as e:
             print(f"Config error: {e}")
             err()

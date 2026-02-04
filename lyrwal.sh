@@ -21,27 +21,29 @@ config_toml_path="$HOME/.config/lyrwal/config.toml"
 write_cfg() {
   cat <<EOL > "$config_toml_path"
 [genius]
-api_key = "YOUR_API_KEY"
+api_key = "YOUR_API_KEY" # API key, get one at https://genius.com/api-clients/new
 
 [lyrics]
-artists = ["Avenged Sevenfold"]
-max_lines = 8
-max_songs = 50
+artists = ["Avenged Sevenfold"] # A list of artists names to include songs by
+max_lines = 8 # The maximum number of lines of a song's paragraph to render
+max_songs = 50 # The maximum number of songs to load and store from each artist
 
 [render]
-width = 1920
-height = 1080
-font = "/usr/share/fonts/liberation/LiberationMono-Regular.ttf"
-font_size = 38
+width = 1920 # Width of the output wallpaper image
+height = 1080 # Height of the output wallpaper image
+font = "/usr/share/fonts/liberation/LiberationMono-Regular.ttf" # The location of the font used to render (has to be .ttf i think)
+font_size = 38 # Font size
 text_color = "#ffffff"
 background_color = "#000000"
-text_align = "centre"
-char_align = "left"
-#bg_img = "/path/to/bg.png"
+# Possible values: centre, left, right, top, bottom, top-left, top-right, bottom-left, bottom-right
+text_align = "centre" # Where the text is rendered on the screen
+# Possible values: centre, left, right
+char_align = "left" # If characters are rendered aligned to the left or to the right
+#bg_img = "/path/to/bg.png" # An optional background image to put behind the text
 
 [wallpaper]
-wallpaper_dir = "$HOME/Pictures/lyrwal/wallpaper.png"
-command = "$HOME/.config/lyrwal/set-wallpaper.sh"
+wallpaper_dir = "$HOME/Pictures/lyrwal/wallpaper.png" # Location that the rendered wallpaper will be saved
+command = "$HOME/.config/lyrwal/set-wallpaper.sh" # The command that will be run to set the wallpaper
 EOL
 }
 
