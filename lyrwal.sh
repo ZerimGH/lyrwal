@@ -46,6 +46,7 @@ text_color = "#ffffff"
 background_color = "#000000"
 text_align = "centre"
 char_align = "left"
+#bg_img = /path/to/bg.png
 
 [wallpaper]
 wallpaper_dir = "$HOME/Pictures/lyrwal/wallpaper.png"
@@ -68,13 +69,27 @@ height=$(./.venv/bin/python -c 'import config; config.get_opt("height")')
 font_size=$(./.venv/bin/python -c 'import config; config.get_opt("font_size")')
 text_align=$(./.venv/bin/python -c 'import config; config.get_opt("text_align")')
 char_align=$(./.venv/bin/python -c 'import config; config.get_opt("char_align")')
-wall_dir=$(./.venv/bin/python -c 'import config; config.get_opt("wallpaper_dir")')
+bg_img=$(./.venv/bin/python -c 'import config; config.get_opt("bg_img")')
+wallpaper_dir=$(./.venv/bin/python -c 'import config; config.get_opt("wallpaper_dir")')
 wall_command=$(./.venv/bin/python -c 'import config; config.get_opt("command")')
-wall_dir=$(eval echo $wall_dir)
+wall_command=$(./.venv/bin/python -c 'import config; config.get_opt("command")')
+wallpaper_dir=$(eval echo $wallpaper_dir)
 wall_command=$(eval echo $wall_command)
 
-img_cmd="textwal -f ${font} -b ${background_color} -t ${text_color} -w ${width} -h ${height} -s ${font_size} -A ${text_align} -a ${char_align} -o ${wall_dir}"  
+img_cmd=(textwal)
 
-$img_cmd < /tmp/lyrwal.txt
+[ -n "$font" ]            && img_cmd+=( -f "$font" )
+[ -n "$background_color" ]&& img_cmd+=( -b "$background_color" )
+[ -n "$text_color" ]      && img_cmd+=( -t "$text_color" )
+[ -n "$width" ]           && img_cmd+=( -w "$width" )
+[ -n "$height" ]          && img_cmd+=( -h "$height" )
+[ -n "$font_size" ]       && img_cmd+=( -s "$font_size" )
+[ -n "$text_align" ]      && img_cmd+=( -A "$text_align" )
+[ -n "$char_align" ]      && img_cmd+=( -a "$char_align" )
+[ -n "$bg_img" ]          && img_cmd+=( -i "$bg_img" )
+[ -n "$wallpaper_dir" ]        && img_cmd+=( -o "$wallpaper_dir" )
+
+printf 'CMD:'; printf ' %q' "${img_cmd[@]}"; echo
+"${img_cmd[@]}" < /tmp/lyrwal.txt
 $wall_command
 rm /tmp/lyrwal.txt
