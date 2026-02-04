@@ -26,5 +26,5 @@ def random_lyrics():
     return "\n".join(paragraph.split("\n")[:n_lines])
 
 if __name__ == "__main__":
-    print(random_lyrics())
-
+    with open("/tmp/lyrwal.txt", "w") as f:
+        f.write(random_lyrics())

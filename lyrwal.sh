@@ -23,8 +23,6 @@ echo 'Please edit $HOME/.config/lyrwal/set-wallpaper.sh to properly set the wall
 EOL
     chmod +x "$set_wallpaper_path"
     echo "$set_wallpaper_path has been created."
-else
-    echo "$set_wallpaper_path already exists."
 fi
 
 if [ ! -e "$config_toml_path" ]; then
@@ -54,14 +52,12 @@ EOL
 
     echo "$config_toml_path has been created."
     echo "You may need to get an API key for genius for $config_toml_path, and edit $set_wallpaper_path to correctly set your wallpaper."
-else
-    echo "$config_toml_path already exists."
 fi
 
 
 # Generate wallpaper
 cd $HOME/.lyrwal/py
-./.venv/bin/python ./main.py > /tmp/lyrwal.txt
+./.venv/bin/python ./main.py
 font=$(./.venv/bin/python -c 'import config; config.get_opt("font")')
 background_color=$(./.venv/bin/python -c 'import config; config.get_opt("background_color")')
 text_color=$(./.venv/bin/python -c 'import config; config.get_opt("text_color")')

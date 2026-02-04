@@ -12,7 +12,7 @@ def err():
 
 if not config.valid:
     print("Invalid config, cannot fetch.")
-    exit()
+    err()
 
 CACHE_DIR = Path("~/.cache/lyrwal").expanduser() 
 ID_CACHE_LOC = CACHE_DIR / "ids.toml" 
@@ -48,7 +48,7 @@ def id_lookup_else_cache(artist):
         artist_id = fetch_artist_id(artist)
         if not artist_id:
             print("Failed to lookup artist %s." % (artist))
-            return None
+            err()
         cache_artist_id(artist, artist_id)
     return artist_id
 
@@ -89,7 +89,7 @@ def fetch_artist_id(artist):
             cache_artist_id(artist, artist_id)
             return artist_id
         except Exception as e:
-            print("Couldn't get artist %s from genius." % (artist))
+            print(f"Couldn't get artist {artist} from genius.")
             print(e)
             err()
 
@@ -104,6 +104,8 @@ def cache_songs(artist_id):
     remaining = config.max_songs
     page = 1
 
+    print(f"Caching songs for artist id {artist_id}")
+
     while remaining > 0:
         result = genius.artist_songs(artist_id, per_page=min(remaining, 50), page=page)
         songs_page = result.get("songs", [])
@@ -116,8 +118,10 @@ def cache_songs(artist_id):
             song_parts = re.split(r'[\s()]+', song_title)
 
             if any(excluded_term in song_parts for excluded_term in excluded_terms):
+                print(f"Skipping song {song_title}, title contains an excluded term")
                 continue
 
+            print(f"Adding song {song_title}")
             all_songs.append(song_data)
             remaining -= 1
             if remaining == 0:
@@ -183,9 +187,12 @@ def random_lyrics():
     artists = config.artists
     while len(artists) > 0:
         artist = random.choice(artists)
+        print(f"Artist: {artist}")
         artists.remove(artist)
         artist_id = id_lookup_else_cache(artist) 
         if not artist_id: continue
+        print(f"Id: {artist_id}")
         lyrics = random_lyrics_else_cache(artist_id) 
         if not lyrics: err() 
+        print("Got lyrics!")
         return lyrics
