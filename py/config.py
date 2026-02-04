@@ -22,6 +22,7 @@ font = "/usr/share/fonts/liberation/LiberationMono-Regular.ttf"
 font_size = 38 
 text_color = "#ffffff"
 background_color = "#000000"
+text_align = "centre"
 
 [wallpaper]
 wallpaper_dir = "$HOME/Pictures/lyrwal/wallpaper.png"
@@ -66,6 +67,7 @@ class Config:
             self.font_size = int(config['render']['font_size'])
             self.text_color = config['render']['text_color']
             self.background_color = config['render']['background_color']
+            self.text_align = config['render']['text_align']
             self.wallpaper_dir = config['wallpaper']['wallpaper_dir']
             self.command = config['wallpaper']['command']
             self.valid = True
