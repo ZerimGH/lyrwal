@@ -1,6 +1,7 @@
 TODO:
   more config options:
-    text alignment and position
+    # text position
+    text alignment
     background image instead of solid coloud
     lyric modes:
       # list of artists
