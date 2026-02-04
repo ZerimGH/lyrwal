@@ -26,7 +26,7 @@ api_key = "YOUR_API_KEY"
 [lyrics]
 artists = ["Avenged Sevenfold"]
 max_lines = 8
-max_songs = 200
+max_songs = 50
 
 [render]
 width = 1920
