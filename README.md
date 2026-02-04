@@ -14,6 +14,7 @@ Setup (Arch linux only):
   
      Look for the lines:
      > [genius]
+     > 
      > api_key = "****************************************************************" # < PUT YOUR API KEY IN THESE QUOTES
      >
      You can customise colours, font, resolution, and artists here too.
