@@ -28,3 +28,4 @@ def random_lyrics():
 if __name__ == "__main__":
     with open("/tmp/lyrwal.txt", "w") as f:
         f.write(random_lyrics())
+    exit(0)
