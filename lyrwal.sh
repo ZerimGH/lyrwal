@@ -54,7 +54,7 @@ write_set_wallpaper() {
   cat <<EOL > "$set_wallpaper_path"
 #!/usr/bin/env bash
 
-WALLPAPER_DIR=\$(lyrwal get wallpaper_dir)
+WALLPAPER_DIR=\$(lyrwal get wallpaper_dir) # This variable will hold the path of the wallpaper image
 echo 'You have not created a script to set your wallpaper!'
 echo 'Please edit $HOME/.config/lyrwal/set-wallpaper.sh to properly set the wallpaper based on WALLPAPER_DIR.'
 EOL

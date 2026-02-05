@@ -193,8 +193,8 @@ class Fetcher:
 
 fetcher = Fetcher()
 
-def random_lyrics():
-    artist_names = config.options.artists.copy()
+def random_lyrics_from_artists(artist_names):
+    artist_names = artist_names.copy()
     while len(artist_names) > 0:
         artist = random.choice(artist_names)
         artist_names.remove(artist)
