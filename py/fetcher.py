@@ -152,7 +152,7 @@ class Fetcher:
             return None
         # Store lookup result
         self.cacher.store_artist_id(artist_name, find_res)
-        print(f"Found and cached id {find_res} for {artist_name}")
+        print(f"Found and cached id {find_res}")
         return find_res
 
     def fetch_artist_songs(self, artist_id):
@@ -170,7 +170,7 @@ class Fetcher:
             return None
         # Store lookup result
         self.cacher.store_artist_songs(artist_id, find_res)
-        print(f"Found and cached {len(find_res)} songs for artist id {artist_id}")
+        print(f"Found and cached {len(find_res)} songs")
         return find_res
 
     def fetch_artist_song_lyrics(self, artist_id, song_id):
@@ -181,14 +181,14 @@ class Fetcher:
             print("Got lyrics")
             return cache_res
         # Lookup from genius
-        print(f"Lyrics for song id {song_id} by artist id {artist_id} not found in cache, fetching from genius")
+        print(f"Lyrics not found in cache, fetching from genius")
         find_res = self.finder.fetch_artist_song_lyrics(artist_id, song_id)
         if find_res is None:
-            print(f"Song lyrics for song id {song_id} by arist id {artist_id} was not cached, and genius lookup failed.") 
+            print(f"Song lyrics for song id {song_id} by arist id {artist_id} were not cached, and genius lookup failed.") 
             return None
         # Store lookup result
         self.cacher.store_artist_song_lyrics(artist_id, song_id, find_res)
-        print(f"Found and cached lyrics for song id {song_id} by artist id {artist_id}")
+        print(f"Found and cached lyrics")
         return find_res
 
 fetcher = Fetcher()

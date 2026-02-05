@@ -76,8 +76,9 @@ if [ "$cmd" = "update" ]; then
       echo "You may need to get an API key for genius for $config_toml_path, and edit $set_wallpaper_path to correctly set your wallpaper."
   fi
 
+    echo "Getting lyrics to render..."
     cd $HOME/.lyrwal/py
-    ./.venv/bin/python ./main.py update
+    ./.venv/bin/python ./main.py
 
     font=$(./.venv/bin/python -c 'import config; config.get_opt("font")')
     background_color=$(./.venv/bin/python -c 'import config; config.get_opt("background_color")')
@@ -110,8 +111,11 @@ if [ "$cmd" = "update" ]; then
 
     # printf 'CMD:'; printf ' %q' "${img_cmd[@]}"; echo
     "${img_cmd[@]}" < /tmp/lyrwal.txt
+    echo "Finished rendering wallpaper"
+    echo "Using command ${wall_command} to set the wallpaper"
     $wall_command
     rm /tmp/lyrwal.txt
+
 elif [ "$cmd" = "get" ]; then
     if [ -z "$arg" ]; then
         echo "Usage: $0 get <key>"
