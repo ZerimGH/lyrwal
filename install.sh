@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 read -p "This script requires that you install the packages: gcc, make, python, freetype2. Do you want to continue? (y/n)" choice
 
 if [[ "$choice" == "y" || "$choice" == "Y" ]]; then
