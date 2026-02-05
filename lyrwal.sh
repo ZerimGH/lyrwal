@@ -123,7 +123,7 @@ elif [ "$cmd" = "get" ]; then
         exit 1
     fi
     cd /usr/lib/lyrwal/py
-    $python_loc -C "import config; config.get_opt('$arg')"
+    $python_loc -c "import config; config.get_opt('$arg')"
 else
     echo "Unknown command: $cmd"
     echo "Usage: $0 {update|get <key>}"
