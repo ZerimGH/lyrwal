@@ -8,7 +8,7 @@ cmd="$1"
 arg="$2"
 
 if [ -z "$cmd" ]; then
-    echo "Usage: $0 {update|get <key>}"
+    echo "Usage: $0 {help|update|get <key>}"
     exit 1
 fi
 
@@ -124,9 +124,31 @@ elif [ "$cmd" = "get" ]; then
     fi
     cd /usr/lib/lyrwal/py
     $python_loc -c "import config; config.get_opt('$arg')"
+elif [ "$cmd" = "help" ]; then
+  cat <<EOL
+1) Get an API key for genius lyrics from https://genius.com/api-clients (free)
+2) Run lyrwal, and let it generate default configs
+   > lyrwal update
+3) Add your API key to the config file at ~/.config/lyrwal/config.toml
+   Look for the lines:
+   [genius]
+   api_key = "****************************************************************" # < PUT YOUR API KEY IN THESE QUOTES
+   You can customise colours, font, text styles, background image, resolution, and artists here too.
+4) Fill in the script to set your wallpaper.
+   There's no generic way to update the wallpaper between wm's, so you'll need a script to do that.
+   The script is at ~/.config/lyrwal/set-wallpaper.sh, and is run after the wallpaper is rendered.
+   An example script for X11 might look like:
+     #!/usr/bin/env bash
+     # These exports are only needed if the script will be run indirectly, by something like cronie or your wm
+     export DISPLAY=:0
+     export XAUTHORITY=\$(ls /tmp/xauth_* | head -n 1)
+     WALLPAPER_DIR=\$(lyrwal get wallpaper_dir)
+     feh --bg-fill \$WALLPAPER_DIR
+5) Run lyrwal update, and your wallpaper should update :) (It will take a while to update the wallpaper until enough lyrics have been cached)
+EOL
 else
     echo "Unknown command: $cmd"
-    echo "Usage: $0 {update|get <key>}"
+    echo "Usage: $0 {help|update|get <key>}"
     exit 1
 fi
 
