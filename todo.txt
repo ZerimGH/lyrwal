@@ -9,6 +9,6 @@ TODO:
       list of songs
       list of albums
       maybe currently playing song with playerctl metadata?
-    text opacity
+    # text opacity
     option to show song information (title, artist) under lyrics
   improve song lookup (remove irrelevant results)
