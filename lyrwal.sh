@@ -91,6 +91,7 @@ if [ "$cmd" = "update" ]; then
     bg_img=$(./.venv/bin/python -c 'import config; config.get_opt("bg_img")')
     wallpaper_dir=$(./.venv/bin/python -c 'import config; config.get_opt("wallpaper_dir")')
     wall_command=$(./.venv/bin/python -c 'import config; config.get_opt("command")')
+    bg_img=$(eval echo $bg_img)
     wallpaper_dir=$(eval echo $wallpaper_dir)
     wall_command=$(eval echo $wall_command)
 
