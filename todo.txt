@@ -11,4 +11,5 @@ TODO:
       maybe currently playing song with playerctl metadata?
     # text opacity
     option to show song information (title, artist) under lyrics
+  fix textwal's text alignment
   improve song lookup (remove irrelevant results)
