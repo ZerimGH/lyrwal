@@ -40,6 +40,7 @@ text_align = "centre" # Where the text is rendered on the screen
 # Possible values: centre, left, right
 char_align = "left" # If characters are rendered aligned to the left or to the right
 #bg_img = "/path/to/bg.png" # An optional background image to put behind the text
+#opacity = 0.5 # An optional opacity value for the text
 
 [wallpaper]
 wallpaper_dir = "$HOME/Pictures/lyrwal/wallpaper.png" # Location that the rendered wallpaper will be saved
@@ -86,6 +87,7 @@ if [ "$cmd" = "update" ]; then
     font_size=$(./.venv/bin/python -c 'import config; config.get_opt("font_size")')
     text_align=$(./.venv/bin/python -c 'import config; config.get_opt("text_align")')
     char_align=$(./.venv/bin/python -c 'import config; config.get_opt("char_align")')
+    opacity=$(./.venv/bin/python -c 'import config; config.get_opt("opacity")')
     bg_img=$(./.venv/bin/python -c 'import config; config.get_opt("bg_img")')
     wallpaper_dir=$(./.venv/bin/python -c 'import config; config.get_opt("wallpaper_dir")')
     wall_command=$(./.venv/bin/python -c 'import config; config.get_opt("command")')
@@ -103,6 +105,7 @@ if [ "$cmd" = "update" ]; then
     [ -n "$char_align" ]      && img_cmd+=( -a "$char_align" )
     [ -n "$bg_img" ]          && img_cmd+=( -i "$bg_img" )
     [ -n "$wallpaper_dir" ]   && img_cmd+=( -o "$wallpaper_dir" )
+    [ -n "$opacity" ]         && img_cmd+=( -p "$opacity" )
 
     printf 'CMD:'; printf ' %q' "${img_cmd[@]}"; echo
     "${img_cmd[@]}" < /tmp/lyrwal.txt

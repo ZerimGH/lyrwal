@@ -24,6 +24,7 @@ OPTIONAL = {
     "render.background_color": str,
     "render.text_align": str,
     "render.char_align": str,
+    "render.opacity": float,
 }
 
 class _MISSING: pass
