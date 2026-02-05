@@ -9,6 +9,7 @@ Preview:
 
 Setup:
   1) Install the package
+
      Using AUR helper:
      > yay -S lyrwal
      > 
