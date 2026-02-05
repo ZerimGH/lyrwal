@@ -86,7 +86,8 @@ class Finder:
             self.genius = Genius(access_token = config.options.api_key,
                                  timeout = 5,
                                  remove_section_headers = True,
-                                 skip_non_songs = True)
+                                 skip_non_songs = True,
+                                 verbose = False)
         else: self.genius = None
 
     def fetch_artist_id(self, artist_name):
@@ -138,41 +139,56 @@ class Fetcher:
 
     def fetch_artist_id(self, artist_name):
         # Check cached ids
+        print(f"Checking cached id's for {artist_name}")
         cache_res = self.cacher.fetch_artist_id(artist_name)
-        if cache_res is not None: return cache_res
+        if cache_res is not None: 
+            print(f"Got id {cache_res}")
+            return cache_res
         # Lookup from genius
+        print(f"Id for {artist_name} not found in cache, fetching from genius")
         find_res = self.finder.fetch_artist_id(artist_name)
         if find_res is None:
             print(f"Id for artist {artist_name} was not cached, and genius lookup failed.") 
             return None
         # Store lookup result
         self.cacher.store_artist_id(artist_name, find_res)
+        print(f"Found and cached id {find_res} for {artist_name}")
         return find_res
 
     def fetch_artist_songs(self, artist_id):
         # Check cached ids
+        print(f"Checking cached songs for artist id {artist_id}")
         cache_res = self.cacher.fetch_artist_songs(artist_id)
-        if cache_res is not None: return cache_res
+        if cache_res is not None:
+            print(f"Got {len(cache_res)} songs")
+            return cache_res
         # Lookup from genius
+        print(f"Songs for artist id {artist_id} not found in cache, fetching from genius")
         find_res = self.finder.fetch_artist_songs(artist_id)
         if find_res is None:
             print(f"Songs for artist id {artist_id} was not cached, and genius lookup failed.") 
             return None
         # Store lookup result
         self.cacher.store_artist_songs(artist_id, find_res)
+        print(f"Found and cached {len(find_res)} songs for artist id {artist_id}")
         return find_res
 
     def fetch_artist_song_lyrics(self, artist_id, song_id):
         # Check cached ids
+        print(f"Checking cached lyrics for song id {song_id} by artist id {artist_id}") 
         cache_res = self.cacher.fetch_artist_song_lyrics(artist_id, song_id)
-        if cache_res is not None: return cache_res
+        if cache_res is not None: 
+            print("Got lyrics")
+            return cache_res
         # Lookup from genius
+        print(f"Lyrics for song id {song_id} by artist id {artist_id} not found in cache, fetching from genius")
         find_res = self.finder.fetch_artist_song_lyrics(artist_id, song_id)
         if find_res is None:
-            print(f"Song lyrics for artist id {artist_id}, song id {song_id} was not cached, and genius lookup failed.") 
+            print(f"Song lyrics for song id {song_id} by arist id {artist_id} was not cached, and genius lookup failed.") 
             return None
         # Store lookup result
         self.cacher.store_artist_song_lyrics(artist_id, song_id, find_res)
+        print(f"Found and cached lyrics for song id {song_id} by artist id {artist_id}")
         return find_res
 
 fetcher = Fetcher()

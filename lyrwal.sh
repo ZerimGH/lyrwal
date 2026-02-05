@@ -108,7 +108,7 @@ if [ "$cmd" = "update" ]; then
     [ -n "$wallpaper_dir" ]   && img_cmd+=( -o "$wallpaper_dir" )
     [ -n "$opacity" ]         && img_cmd+=( -p "$opacity" )
 
-    printf 'CMD:'; printf ' %q' "${img_cmd[@]}"; echo
+    # printf 'CMD:'; printf ' %q' "${img_cmd[@]}"; echo
     "${img_cmd[@]}" < /tmp/lyrwal.txt
     $wall_command
     rm /tmp/lyrwal.txt
