@@ -1,10 +1,12 @@
+INSTALL_DIR=/usr/local/bin
+
 all:
 	make all -C ./textwal
 	make all -C ./py
 
 install:
-	sudo cp ./lyrwal.sh /usr/local/bin/lyrwal
-	sudo chmod +x /usr/local/bin/lyrwal
+	sudo cp ./lyrwal.sh $(INSTALL_DIR)/lyrwal 
+	sudo chmod +x $(INSTALL_DIR)/lyrwal
 	make install -C ./textwal
 	make install -C ./py
 
