@@ -12,6 +12,7 @@ if [ -z "$cmd" ]; then
     exit 1
 fi
 
+python_loc="/usr/lib/lyrwal/venv/bin/python"
 mkdir -p $HOME/Pictures
 mkdir -p $HOME/Pictures/lyrwal
 
@@ -77,21 +78,21 @@ if [ "$cmd" = "update" ]; then
   fi
 
     echo "Getting lyrics to render..."
-    cd $HOME/.lyrwal/py
-    ./.venv/bin/python ./main.py
+    cd /usr/lib/lyrwal/py
+    $python_loc ./main.py
 
-    font=$(./.venv/bin/python -c 'import config; config.get_opt("font")')
-    background_color=$(./.venv/bin/python -c 'import config; config.get_opt("background_color")')
-    text_color=$(./.venv/bin/python -c 'import config; config.get_opt("text_color")')
-    width=$(./.venv/bin/python -c 'import config; config.get_opt("width")')
-    height=$(./.venv/bin/python -c 'import config; config.get_opt("height")')
-    font_size=$(./.venv/bin/python -c 'import config; config.get_opt("font_size")')
-    text_align=$(./.venv/bin/python -c 'import config; config.get_opt("text_align")')
-    char_align=$(./.venv/bin/python -c 'import config; config.get_opt("char_align")')
-    opacity=$(./.venv/bin/python -c 'import config; config.get_opt("opacity")')
-    bg_img=$(./.venv/bin/python -c 'import config; config.get_opt("bg_img")')
-    wallpaper_dir=$(./.venv/bin/python -c 'import config; config.get_opt("wallpaper_dir")')
-    wall_command=$(./.venv/bin/python -c 'import config; config.get_opt("command")')
+    font=$($python_loc -c 'import config; config.get_opt("font")')
+    background_color=$($python_loc -c 'import config; config.get_opt("background_color")')
+    text_color=$($python_loc -c 'import config; config.get_opt("text_color")')
+    width=$($python_loc -c 'import config; config.get_opt("width")')
+    height=$($python_loc -c 'import config; config.get_opt("height")')
+    font_size=$($python_loc -c 'import config; config.get_opt("font_size")')
+    text_align=$($python_loc -c 'import config; config.get_opt("text_align")')
+    char_align=$($python_loc -c 'import config; config.get_opt("char_align")')
+    opacity=$($python_loc -c 'import config; config.get_opt("opacity")')
+    bg_img=$($python_loc -c 'import config; config.get_opt("bg_img")')
+    wallpaper_dir=$($python_loc -c 'import config; config.get_opt("wallpaper_dir")')
+    wall_command=$($python_loc -c 'import config; config.get_opt("command")')
     bg_img=$(eval echo $bg_img)
     wallpaper_dir=$(eval echo $wallpaper_dir)
     wall_command=$(eval echo $wall_command)
@@ -121,8 +122,8 @@ elif [ "$cmd" = "get" ]; then
         echo "Usage: $0 get <key>"
         exit 1
     fi
-    cd $HOME/.lyrwal/py
-    ./.venv/bin/python -c "import config; config.get_opt('$arg')"
+    cd /usr/lib/lyrwal/py
+    $python_loc -C "import config; config.get_opt('$arg')"
 else
     echo "Unknown command: $cmd"
     echo "Usage: $0 {update|get <key>}"
