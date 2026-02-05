@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-read -p "This script is only for arch linux, and may mess stuff up on other distros. Do you want to continue (y/n)? " choice
+read -p "This script requires that you install the packages: gcc, make, python, freetype2. Do you want to continue? (y/n)" choice
 
 if [[ "$choice" == "y" || "$choice" == "Y" ]]; then
     echo "Continuing..."
@@ -14,8 +14,6 @@ fi
 dir=$(pwd)
 
 set -xe
-
-sudo pacman -S --needed python gcc freetype2
 
 mkdir -p ~/.lyrwal
 cp -r ./py ~/.lyrwal
