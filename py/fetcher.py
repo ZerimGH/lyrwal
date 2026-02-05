@@ -125,7 +125,7 @@ class Finder:
     def fetch_artist_song_lyrics(self, artist_id, song_id):
         if self.genius is None: return None
         try:
-            return self.genius.lyrics(song_id=song_id)
+            return self.genius.lyrics(song_id=song_id, remove_section_headers=True)
         except Exception as e:
             print(f"Genius lyrics request failed: {e}")
             return None
