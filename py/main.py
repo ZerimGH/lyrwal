@@ -1,11 +1,7 @@
 import fetcher
 import re
-import config as cfg
 import random
-config = cfg.Config()
-if not config.valid:
-    print("Invalid config, cannot fetch.")
-    exit()
+import config
 
 def random_lyrics():
     lyrics = fetcher.random_lyrics()
@@ -15,7 +11,7 @@ def random_lyrics():
     paragraphs = re.split(r'\n{2,}', lyrics)
     paragraph = random.choice(paragraphs)
 
-    max_lines = config.max_lines
+    max_lines = config.options.max_lines
     powers = [2]
     for i in range(2, max_lines):
         n = 2 ** i

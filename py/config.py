@@ -1,18 +1,9 @@
 import tomllib
 from pathlib import Path
 import os
-
-def err(): 
-    print("Something went wrong with loading the configuration.")
-    exit(1)
+import requests
 
 CONFIG_PATH = Path("~/.config/lyrwal/config.toml").expanduser()
-SET_PATH = Path("~/.config/lyrwal/set-wallpaper.sh").expanduser()
-
-def read_config():
-    with open(CONFIG_PATH, "rb") as f:
-        config = tomllib.load(f)
-        return config
 
 REQUIRED = {
     "genius.api_key": str,
@@ -37,6 +28,11 @@ OPTIONAL = {
 
 class _MISSING: pass
 
+def read_config():
+    with open(CONFIG_PATH, "rb") as f:
+        config = tomllib.load(f)
+        return config
+
 def get(config, path, cast=None, default=_MISSING):
     cur = config
     for key in path.split("."):
@@ -47,47 +43,34 @@ def get(config, path, cast=None, default=_MISSING):
         cur = cur[key]
     return cast(cur) if cast else cur
 
-class Config:
-    def __init__(self):
+class Options:
+    # Load all options from the toml file
+    def load(self):
         try:
             config = read_config()
             if not config:
                 raise RuntimeError("Could not read config file")
-
             for path, typ in REQUIRED.items():
                 setattr(self, path.split(".")[-1], get(config, path, typ))
-
             for path, typ in OPTIONAL.items():
-                setattr(
-                    self,
-                    path.split(".")[-1],
-                    get(config, path, typ, default=None)
-                )
-
+                setattr(self, path.split(".")[-1], get(config, path, typ, default=None))
             self.valid = True
-
-            if self.api_key == "YOUR_API_KEY":
-                print("You need to get an API key!\ngo to https://genius.com/api-clients/new, and put your key in the config file.")
-                self.valid = False
-
         except Exception as e:
             print(f"Config error: {e}")
-            err()
             self.valid = False
 
-    def print(self):
-        if not self.valid:
-            print("Invalid config")
-            err()
-        else:
-            d = self.__dict__
-            for v in d:
-                print('%s: %s' % (str(v), str(d[v])))
+    def __init__(self):
+        self.load()
 
 def get_opt(key):
     try:
-        cfg = Config()
-        v = cfg.__dict__[key]
-        if v: print(v)
+        v = getattr(options, key, None) 
+        if v is not None: print(v)
     except Exception as e:
         return
+
+options = Options()
+if not options.valid:
+    print("Invalid config file. Please correct it.")
+    exit(1)
+

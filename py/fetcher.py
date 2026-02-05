@@ -1,238 +1,194 @@
-import config as cfg
+import config
 from lyricsgenius import Genius
 from pathlib import Path
 import tomllib
-import re
 import random
-config = cfg.Config()
 
-def err(): 
-    print("Something went wrong, couldn't get the text to render.")
-    exit(1)
+# Class responsible for fetching and storing local information
+class Cacher:
+    # Make sure the necessary cache files exist
+    def ensure_files(self):
+        if not self.cache_dir.exists():
+            print(f"Making cache directory {self.cache_dir}")
+            self.cache_dir.mkdir(parents=True, exist_ok=True)
+        if not self.artist_id_cache.exists():
+            print(f"Making artist id cache file {self.artist_id_cache}")
+            self.artist_id_cache.write_text("[artists]")
 
-if not config.valid:
-    print("Invalid config, cannot fetch.")
-    err()
+    def __init__(self):
+        self.cache_dir = Path("~/.cache/lyrwal").expanduser() 
+        self.artist_id_cache = self.cache_dir / "artists.toml"
+        self.ensure_files()
 
-CACHE_DIR = Path("~/.cache/lyrwal").expanduser() 
-ID_CACHE_LOC = CACHE_DIR / "ids.toml" 
-
-genius = Genius(config.api_key,
-    skip_non_songs=True,
-    remove_section_headers=True,
-    verbose=False,
-    timeout=5
-)
-
-def ensure_cache():
-    if not CACHE_DIR.exists():
-        CACHE_DIR.mkdir(parents=True, exist_ok = True)
-
-def ensure_id_cache():
-    ensure_cache()
-    if not ID_CACHE_LOC.exists():
-        ID_CACHE_LOC.write_text("""\
-[artists]
-""")
-
-def id_lookup(artist):
-    ensure_id_cache()
-    try:
-        with open(ID_CACHE_LOC, "rb") as f:
-            ids = tomllib.load(f)
-            return ids['artists'][name_to_key(artist)] 
-    except: return None
-
-def id_lookup_else_cache(artist):
-    if artist is None: return None
-    artist_id = id_lookup(artist)
-    if artist_id is None:
-        artist_id = fetch_artist_id(artist)
-        if artist_id is None:
-            print("Failed to lookup artist %s." % (artist))
-        cache_artist_id(artist, artist_id)
-    return artist_id
-
-def name_to_key(artist):
-    artist = artist.lower()
-    artist = artist.replace(" ", "_")
-    artist = re.sub(r"[^a-z0-9_]", "", artist)
-    return artist
-
-def cache_artist_id(artist, artist_id):
-    ensure_id_cache()
-    try:
-        with open(ID_CACHE_LOC, "rb") as f:
-            ids = tomllib.load(f)
-    except FileNotFoundError:
-        ids = {"artists": {}}
-
-    if "artists" not in ids:
-        ids["artists"] = {}
-
-    ids["artists"][name_to_key(artist)] = artist_id
-    with open(ID_CACHE_LOC, "w") as f:
-        f.write("[artists]\n")
-        for a, aid in ids["artists"].items():
-            f.write('%s = "%s"\n' % (a, aid))
-
-def fetch_artist_id(artist): 
-    artist_id = id_lookup(artist)
-    if artist_id is not None:
-        return artist_id
-    else:
+    # Get all cached Artist Name -> Id's
+    def fetch_artist_ids(self):
         try:
-            g_artist = genius.search_artist(
-                artist, 
-                max_songs = 0 
-            )
-            artist_id = g_artist._body['id'] 
-            cache_artist_id(artist, artist_id)
-            return artist_id
-        except Exception as e:
-            print(f"Couldn't get artist {artist} from genius.")
-            print(e)
-            return None
+            with open(self.artist_id_cache, "rb") as f:
+                ids = tomllib.load(f)
+                return ids['artists'] 
+        except (FileNotFoundError, KeyError): return {}
 
-def cache_songs(artist_id):
-    excluded_terms = ["remix", "live", "feat.", "ft.", "sampled", "edition", "version", "instrumental", "edit", "mix", "demo", "cover", "theme"]
-    artist_dir = CACHE_DIR / str(artist_id)
+    # Get a specific artist's id
+    def fetch_artist_id(self, artist_name):
+        ids = self.fetch_artist_ids()
+        if artist_name in ids: return int(ids[artist_name])
+        else: return None
 
-    if artist_dir.exists() and any(artist_dir.iterdir()):
-        return
+    # Get all song id's from an artist id
+    def fetch_artist_songs(self, artist_id):
+        artist_cache_dir = self.cache_dir / str(artist_id)
+        if not artist_cache_dir.exists(): return None
+        song_id_cache = artist_cache_dir / "songs.txt"
+        if not song_id_cache.exists(): return None
+        with open(song_id_cache, "r") as f:
+            return f.read().splitlines()
 
-    all_songs = []
-    remaining = config.max_songs
-    page = 1
-
-    print(f"Caching songs for artist id {artist_id}")
-
-    try:
-        while remaining > 0:
-            result = genius.artist_songs(artist_id, per_page=min(remaining, 50), page=page, sort='popularity')
-            songs_page = result.get("songs", [])
-            if songs_page is None:
-                break
-            for song_data in songs_page:
-                song_title = song_data["title"].lower()
-                song_parts = re.split(r'[\s()]+', song_title)
-                if any(excluded_term in song_parts for excluded_term in excluded_terms):
-                    print(f"Skipping song {song_title}, title contains an excluded term")
-                    continue
-                print(f"Adding song {song_title}")
-                all_songs.append(song_data)
-                remaining -= 1
-                if remaining == 0:
-                    break
-            page += 1
-    except Exception as e:
-        print(e)
-
-    if len(all_songs) == 0:
-        print(f"Couldn't get songs from Genius for artist id {artist_id}.")
-        return
-
-    artist_dir.mkdir(parents=True, exist_ok=True)
-    ids_loc = artist_dir / "songs.txt"
-    with open(ids_loc, "w") as f:
-        for song_data in all_songs:
-            f.write(f"{song_data.get('id')}\n")
-
-def random_song_id_else_cache(artist_id):
-    artist_dir = CACHE_DIR / str(artist_id)
-    ids_loc = artist_dir / "songs.txt"
-
-    if not ids_loc.exists():
-        cache_songs(artist_id)
-        if not ids_loc.exists():
-            return None
-
-    with open(ids_loc, "r") as f:
-        song_ids = [line.strip() for line in f]
-
-    if song_ids is None:
-        print("No song IDs found in the cache.")
-        return None
-
-    song_id = random.choice(song_ids)
-    return song_id
-
-def process_lyrics(lyrics):
-    processed_lyrics = re.sub(r'\[.*?\]', '', lyrics)
-    processed_lyrics = processed_lyrics.strip()
-
-    return processed_lyrics
-
-def random_lyrics_else_cache(artist_id):
-    artist_dir = CACHE_DIR / str(artist_id)
-    song_id = random_song_id_else_cache(artist_id)
-    if song_id is None: return None
-
-    song_loc = artist_dir / f"{song_id}.txt"
-
-    if song_loc.exists():
-        with open(song_loc, "r") as f:
+    # Get the lyrics of an artist's song
+    def fetch_artist_song_lyrics(self, artist_id, song_id):
+        artist_cache_dir = self.cache_dir / str(artist_id)
+        if not artist_cache_dir.exists(): return None
+        lyrics = artist_cache_dir / f"{song_id}.txt"
+        if not lyrics.exists(): return None
+        with open(lyrics, "r") as f:
             return f.read()
 
-    try:
-        lyrics = genius.lyrics(song_id=song_id)
-        if lyrics:
-            lyrics = process_lyrics(lyrics)
-            artist_dir.mkdir(parents=True, exist_ok=True)
-            with open(song_loc, "w") as f:
-                f.write(lyrics)
-            return lyrics
-    except Exception as e:
-        print(f"Error fetching lyrics for song ID {song_id}: {e}")
-        return None
+    # Store an artists id
+    def store_artist_id(self, artist_name, artist_id):
+        ids = self.fetch_artist_ids()
+        ids[artist_name] = artist_id
 
-def random_lyrics_fallback():
-    print("Failed to get random lyrics online, searching only cached files.")
-    artists = config.artists.copy()
-    while len(artists) > 0:
-        artist = random.choice(artists)
-        print(f"Artist: {artist}")
-        artists.remove(artist)
-        artist_id = id_lookup_else_cache(artist) 
-        if artist_id is None: continue
+        with open(self.artist_id_cache, "w") as f:
+            f.write("[artists]\n")
+            for aid, val in ids.items():
+                f.write(f'"{aid}" = "{val}"\n')
 
-        artist_dir = CACHE_DIR / str(artist_id)
+    # Store all song id's from an artist
+    def store_artist_songs(self, artist_id, song_ids):
+        artist_cache_dir = self.cache_dir / str(artist_id)
+        artist_cache_dir.mkdir(parents=True, exist_ok=True)
+        song_id_cache = artist_cache_dir / "songs.txt"
+        with open(song_id_cache, "w") as f:
+            for sid in song_ids:
+                f.write(f"{sid}\n")
 
-        ids_loc = artist_dir / "songs.txt"
+    # Store the lyrics of an artist's song
+    def store_artist_song_lyrics(self, artist_id, song_id, lyrics):
+        artist_cache_dir = self.cache_dir / str(artist_id)
+        artist_cache_dir.mkdir(parents=True, exist_ok=True)
+        lyrics_p = artist_cache_dir / f"{song_id}.txt"
+        with open(lyrics_p, "w") as f:
+            f.write(lyrics)
 
-        if not ids_loc.exists(): continue 
+# Class responsible for fetching information from the API
+class Finder:
+    def __init__(self):
+        if config.options.api_key is not None:
+            self.genius = Genius(access_token = config.options.api_key,
+                                 timeout = 5,
+                                 remove_section_headers = True,
+                                 skip_non_songs = True)
+        else: self.genius = None
 
-        with open(ids_loc, "r") as f:
-            song_ids = [line.strip() for line in f]
+    def fetch_artist_id(self, artist_name):
+        if self.genius is None: return None
+        try:
+            artist = self.genius.search_artist(artist_name, max_songs = 0) 
+        except Exception as e:
+            print(f"Genius lookup request failed: {e}")
+            return None
+        if artist is None: 
+            print(f"Failed to lookup id for artist {artist_name}.")
+            return None
+        return artist._body['id'] 
 
-        while len(song_ids) > 0:
-            song_id = random.choice(song_ids)
-            song_ids.remove(song_id)
+    def fetch_artist_songs(self, artist_id):
+        if self.genius is None: return None
+        to_load = config.options.max_songs
+        all_songs = []
+        page = 1
+        while len(all_songs) < to_load:
+            try:
+                local_songs = self.genius.artist_songs(artist_id=artist_id,
+                                                       sort='popularity',
+                                                       per_page=50,
+                                                       page=page)
+                if not local_songs: break 
+                for song in local_songs['songs']:
+                    all_songs.append(song['id'])
+                    if len(all_songs) >= to_load: break
+                page += 1
+            except Exception as e:
+                print(f"Genius song search request failed: {e}")
+                return None
+        return all_songs
 
-            song_loc = artist_dir / f"{song_id}.txt"
+    def fetch_artist_song_lyrics(self, artist_id, song_id):
+        if self.genius is None: return None
+        try:
+            return self.genius.lyrics(song_id=song_id)
+        except Exception as e:
+            print(f"Genius lyrics request failed: {e}")
+            return None
 
-            if song_loc.exists():
-                with open(song_loc, "r") as f:
-                    print("Got cached lyrics!")
-                    return f.read()
-            else: continue
-    print("No cached lyrics found.")
-    return None
+# Main fetcher class
+class Fetcher:
+    def __init__(self):
+        self.cacher = Cacher()
+        self.finder = Finder()
+
+    def fetch_artist_id(self, artist_name):
+        # Check cached ids
+        cache_res = self.cacher.fetch_artist_id(artist_name)
+        if cache_res is not None: return cache_res
+        # Lookup from genius
+        find_res = self.finder.fetch_artist_id(artist_name)
+        if find_res is None:
+            print(f"Id for artist {artist_name} was not cached, and genius lookup failed.") 
+            return None
+        # Store lookup result
+        self.cacher.store_artist_id(artist_name, find_res)
+        return find_res
+
+    def fetch_artist_songs(self, artist_id):
+        # Check cached ids
+        cache_res = self.cacher.fetch_artist_songs(artist_id)
+        if cache_res is not None: return cache_res
+        # Lookup from genius
+        find_res = self.finder.fetch_artist_songs(artist_id)
+        if find_res is None:
+            print(f"Songs for artist id {artist_id} was not cached, and genius lookup failed.") 
+            return None
+        # Store lookup result
+        self.cacher.store_artist_songs(artist_id, find_res)
+        return find_res
+
+    def fetch_artist_song_lyrics(self, artist_id, song_id):
+        # Check cached ids
+        cache_res = self.cacher.fetch_artist_song_lyrics(artist_id, song_id)
+        if cache_res is not None: return cache_res
+        # Lookup from genius
+        find_res = self.finder.fetch_artist_song_lyrics(artist_id, song_id)
+        if find_res is None:
+            print(f"Song lyrics for artist id {artist_id}, song id {song_id} was not cached, and genius lookup failed.") 
+            return None
+        # Store lookup result
+        self.cacher.store_artist_song_lyrics(artist_id, song_id, find_res)
+        return find_res
+
+fetcher = Fetcher()
 
 def random_lyrics():
-    artists = config.artists.copy()
-    lyrics = None
-    while len(artists) > 0:
-        artist = random.choice(artists)
-        print(f"Artist: {artist}")
-        artists.remove(artist)
-        artist_id = id_lookup_else_cache(artist) 
-        if artist_id is None or artist_id == 'None': 
-            continue
-        else:
-            print(f"Id: {artist_id}")
-            lyrics = random_lyrics_else_cache(artist_id) 
-            if lyrics is not None: break
-    if lyrics is None: return random_lyrics_fallback()
-    print("Got lyrics!")
-    return lyrics
+    artist_names = config.options.artists.copy()
+    while len(artist_names) > 0:
+        artist = random.choice(artist_names)
+        artist_names.remove(artist)
+        artist_id = fetcher.fetch_artist_id(artist) 
+        if artist_id is None: continue
+        artist_songs = fetcher.fetch_artist_songs(artist_id)
+        if artist_songs is None: continue
+        while len(artist_songs) > 0:
+            song = random.choice(artist_songs)
+            artist_songs.remove(song)
+            lyrics = fetcher.fetch_artist_song_lyrics(artist_id, song)
+            if lyrics is not None: return lyrics
+    return None
